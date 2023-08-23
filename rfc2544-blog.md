@@ -18,8 +18,7 @@ For readers interested in replicating the process, they can refer to the instruc
 
 In the same repository, the SNO manifests necessary for configuring the system to run the TestPMD container can be located: https://github.com/redhat-eets/netgauge/tree/main/manifests/single-node-openshift
 
-Plentiful information regarding these manifests can be sourced from the official OpenShift documentation. Rather than duplicating this information, our focus will be solely on exploring possible challenges encountered when conducting RFC2544 tests within the OpenShift environment.
-
+Abundant information regarding these manifests is available in the official OpenShift documentation. Instead of replicating this information, our emphasis will be solely on delving into the challenges we faced while conducting RFC2544 tests within the OpenShift environment.
 
 ## Noisy neighbor problem
 
@@ -48,8 +47,8 @@ Once the performance profile has been applied and the system has completed the n
 The "full-pcpus-only" policy guarantees that a container occupies complete CPU cores. However, to entirely mitigate the noisy neighbor issue, the application must retain control over CPU allocation. For instance, if a DPDK worker thread utilizes CPU 4, the DPDK application should take measures to prevent its other threads from executing on the sibling of CPU 4, such as CPU 36. This ensures the intended isolation of resources.
 
 This noisy neighbor problem does not exist if the hyperthreading is disabled.
-  
-To calculate the CPU allocation and effectively bind threads to distinct cores—irrespective of hyperthreading status—we implemented a wrapper for TestPMD. This wrapper manages CPU pinning for TestPMD without altering the core functionality of TestPMD itself. Additionally, the wrapper incorporates a REST API, which allows for control and querying of TestPMD operations. While the details of utilizing this API fall outside the scope of this blog, readers keen on exploring it further are encouraged to refer to the documentation provided in the repository.
+
+To achieve the highest throughput performance in the OpenShift (or Kubernetes) environment, a DPDK application must exhibit CPU awareness by effectively binding threads to individual cores according to the CpuSet assigned to the container. There are two approaches to achieve CPU awareness: integrating it directly into the application's code or utilizing a wrapper. The wrapper approach enables CPU-aware behavior without requiring any modifications to the application itself. We implemented a wrapper for TestPMD. This wrapper manages CPU pinning for TestPMD without altering the core functionality of TestPMD itself. Additionally, the wrapper incorporates a REST API, which allows for control and querying of TestPMD operations. While the details of utilizing this API fall outside the scope of this blog, readers keen on exploring it further are encouraged to refer to the documentation provided in the repository.
 
 ## CPU quota problem
 
@@ -80,7 +79,7 @@ nr_throttled 31857
 throttled_time 4792267674277
 ```
 
-To disable the CPU quota for the pod, the following pod spec is used,
+The following is the relevant pod specification utilized to disable the CPU quota for the pod,
 ```
 metadata:
   annotations:
