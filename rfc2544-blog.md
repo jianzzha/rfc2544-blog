@@ -49,7 +49,7 @@ The "full-pcpus-only" policy guarantees that a container occupies complete CPU c
 
 This noisy neighbor problem does not exist if the hyperthreading is disabled.
   
-To calculate the CPU allocation and effectively bind threads to distinct cores—irrespective of hyperthreading status—we implemented a wrapper for TestPMD. This wrapper manages CPU pinning for TestPMD and also offers a REST API. This API serves the purpose of both controlling and querying TestPMD operations.
+To calculate the CPU allocation and effectively bind threads to distinct cores—irrespective of hyperthreading status—we implemented a wrapper for TestPMD. This wrapper manages CPU pinning for TestPMD without altering the core functionality of TestPMD itself. Additionally, the wrapper incorporates a REST API, which allows for control and querying of TestPMD operations. While the details of utilizing this API fall outside the scope of this blog, readers keen on exploring it further are encouraged to refer to the documentation provided in the repository.
 
 ## CPU quota problem
 
