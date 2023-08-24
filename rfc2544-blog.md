@@ -90,12 +90,16 @@ spec:
 
 To find the right runtimeClassName, one can use “oc get performanceprofile performance -o yaml | grep runtimeClass”.
 
-While having the correct configuration is important, it doesn't automatically guarantee the deactivation of CPU quotas. An example of this situation occurred during the transition from cgroup v1 to cgroup v2 in CRI-O, when Initially the implementation of disabling CPU quotas per pod was not implemented, resulting in performance deterioration during RFC2544 testing. Instances of RFC2544 throughput problems due to CPU quotas are noticeable in specific releases, like 4.13.0. 
+While ensuring the correct configuration is vital, it doesn't inherently guarantee the deactivation of CPU quotas. A notable instance of this occurred during the transition from cgroup v1 to cgroup v2 in CRI-O. Initially, the implementation to disable CPU quotas on a per-pod basis was absent, resulting in performance deterioration during RFC2544 testing. Notably, versions such as 4.13.0 exhibited RFC2544 throughput issues stemming from CPU quotas.
+
+The significance of the RFC2544 performance was affirmed through our ability to identify performance degradation during the throughput test. This allowed us to trace the problem back to the missing CRI-O implementation, further underscoring the value of RFC2544 in pinpointing performance challenges.
 
 To verify whether CRI-O is genuinely attempting to disable the CPU quota, it's possible to inspect the CRI-O log. By logging into the node and reviewing the output using the command "journalctl -u crio," you can observe relevant information. When the DPDK container initiates, CRI-O should generate a message akin to: "Disable cpu cfs quota for container…" indicating the action taken.
 
+Apart from deactivating the pod CPU quota and ensuring that CRI-O effectively enacts this action upon pod startup, it's equally crucial to disable IRQ load balancing and CPU load balancing via pod annotations. Additionally, it's recommended to decrease network queues using the userLevelNetworking setting within the performance profile. For readers keen on further insights, I recommend referring to the OpenShift official performance tuning guide for a comprehensive understanding.
+
 ## Conclusions
 
-This blog aims to present the most significant challenges we faced during an RFC2544 test, rather than offering an exhaustive list of potential issues. While it doesn't encompass all possible problems, the blog sheds light on the intriguing obstacles we encountered. The information we share is intended to assist individuals in gaining insight into these challenges, as well as discovering and resolving them effectively.
+This blog aims to present the most significant challenges we faced during an RFC2544 test, rather than offering an exhaustive list of issues. While it doesn't encompass all possible problems, the blog sheds light on the intriguing obstacles we encountered. The information we share is intended to assist individuals in gaining insight into these challenges, as well as discovering and resolving them effectively.
 
 Furthermore, the test tools and manifests discussed in this blog are tailored to meet our specific testing goals and yield positive outcomes, although they may not constitute a universally applicable standard.
